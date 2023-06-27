@@ -1,0 +1,133 @@
+Attribute VB_Name = "Module1"
+Sub CalculateStockData()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim ticker As String
+    Dim date_earliest As Long
+    Dim open_ As Double
+    Dim close_ As Double
+    Dim date_latest As Long
+    Dim totalVolume As Variant
+    Dim yearly_change As Double
+    Dim percentage_change As Double
+    Dim row_n As Integer
+    Dim token As Boolean
+    
+    
+    ' Set the worksheet where your data is located
+    Set ws = ThisWorkbook.Sheets("2018") ' Replace "Sheet1" with your actual sheet name
+    
+    ' Set column headers
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percentage Change"
+    ws.Cells(1, 12).Value = "Total Stock Volume"
+    ws.Cells(1, 13).Value = "open"
+    ws.Cells(1, 14).Value = "close"
+    ' Find the last row of data in column A
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    
+    totalVolume = 0
+    row_n = 2
+    token = True
+    
+    For i = 2 To lastRow
+        ticker = ws.Cells(i, 1).Value
+        If token = True Then
+            open_ = ws.Cells(i, 3).Value
+            token = False
+            
+        End If
+        If ticker = ws.Cells(i + 1, 1).Value Then
+            totalVolume = totalVolume + ws.Cells(i, 7).Value
+            
+            
+            
+        Else
+            close_ = ws.Cells(i, 6).Value
+            
+
+            totalVolume = totalVolume + ws.Cells(i, 7).Value
+            
+            ws.Cells(row_n, 9).Value = ticker
+            yearly_change = close_ - open_
+            If open_ <> 0 Then
+                percentage_change = yearly_change / open_
+            Else
+                percentage_change = 0
+            End If
+            ws.Cells(row_n, 10).Value = yearly_change
+            ws.Cells(row_n, 11).Value = percentage_change
+            ws.Cells(row_n, 12).Value = totalVolume
+
+            
+            
+            totalVolume = 0
+            token = True
+            
+            row_n = row_n + 1
+        End If
+    Next i
+End Sub
+
+Sub bonus()
+    Dim ticker_inc As String
+    Dim inc_ As Variant
+    Dim dec_ As Variant
+    Dim vol As Variant
+    Dim ticker_dec As Variant
+    Dim ticker_vol As String
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+    Dim val_inc As Double
+    Dim val_dec As Double
+    
+    
+    
+    Set ws = ThisWorkbook.Sheets("2018")
+    
+    ws.Cells(2, 15).Value = "Greatest % Increase"
+    ws.Cells(3, 15).Value = "Greatest % Decrease"
+    ws.Cells(4, 15).Value = "Greatest Total Volume"
+    ws.Cells(1, 16).Value = "Ticker"
+    ws.Cells(1, 17).Value = "Value"
+    
+    lastRow = ws.Cells(ws.Rows.Count, 9).End(xlUp).Row
+    
+    inc_ = ws.Cells(2, 10).Value
+    dec_ = ws.Cells(2, 10).Value
+    vol = ws.Cells(2, 12).Value
+    
+    For i = 3 To lastRow
+        If inc_ < ws.Cells(i, 10).Value Then
+            inc_ = ws.Cells(i, 10).Value
+            val_inc = ws.Cells(i, 11).Value
+            
+            
+            ticker_inc = ws.Cells(i, 9).Value
+        End If
+        
+        If dec_ > ws.Cells(i, 10).Value Then
+            dec_ = ws.Cells(i, 10).Value
+            ticker_dec = ws.Cells(i, 9).Value
+            val_dec = ws.Cells(i, 11).Value
+            
+        End If
+        
+        If vol < ws.Cells(i, 12).Value Then
+            vol = ws.Cells(i, 12).Value
+            ticker_vol = ws.Cells(i, 9).Value
+        End If
+    Next i
+    
+    ws.Cells(2, 16).Value = ticker_inc
+    ws.Cells(2, 17).Value = val_inc
+    
+    ws.Cells(3, 16).Value = ticker_dec
+    ws.Cells(3, 17).Value = val_dec
+    
+    ws.Cells(4, 16).Value = ticker_vol
+    ws.Cells(4, 17).Value = vol
+End Sub
+
